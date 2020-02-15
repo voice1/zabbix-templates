@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import docker
 import sys
@@ -37,7 +37,7 @@ def stateOfContainer(client, container):
     try:
         return client.containers(filters={'name': container})[0]['State']
     except:
-        print 'Container with this name is not running'
+        print('Container with this name is not running')
         sys.exit(0)
 
 if __name__ == "__main__":
@@ -52,5 +52,5 @@ if __name__ == "__main__":
             client = docker.Client(base_url='unix://var/run/docker.sock')
             sys.exit(stateOfContainer(client, sys.argv[1]))
     else:
-        print 'Please run script with list or container name'
+        print('Please run script with list or container name')
         sys.exit(0)
