@@ -1,0 +1,1152 @@
+zabbix_export:
+  version: '6.2'
+  date: '2023-03-31T16:47:48Z'
+  template_groups:
+    -
+      uuid: 1d12408342854fd5a4436dd6d5d1bd4a
+      name: Templates/Telephony
+  templates:
+    -
+      uuid: 236b3da84f614d35998837b075993ed6
+      template: 'Digium Switchvox PBX'
+      name: 'Digium Switchvox PBX'
+      description: |
+        Switchvox PBX SNMP Monitoring.
+        Switchvox MIB's + Linux SNMP stack.
+      templates:
+        -
+          name: 'Digium Telephony Cards'
+        -
+          name: 'Linux SNMP'
+      groups:
+        -
+          name: Templates/Telephony
+      items:
+        -
+          uuid: 6744c99bf47f438282aab178063ffcdb
+          name: 'Controller Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.8.1
+          key: swvxControllerStatus
+          delay: '300'
+          history: 14d
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+          description: 'RAID Controller Status'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'RAID Controller'
+          triggers:
+            -
+              uuid: 9ea7c01585f849b583757930cb421eed
+              expression: 'find(/Digium Switchvox PBX/swvxControllerStatus,,"like","Optimal")<>1'
+              name: 'RAID Not Optimal'
+              priority: WARNING
+              description: 'RAID is not Optimal'
+              manual_close: 'YES'
+        -
+          uuid: 155908bbf00b42d4ae7078d6c79737f7
+          name: 'CPU Load'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.3.1
+          key: swvxCPULoad
+          delay: '60'
+          history: 14d
+          value_type: FLOAT
+          description: 'CPU Load'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+          triggers:
+            -
+              uuid: 9947a78db7354c25885889870fde1d72
+              expression: 'last(/Digium Switchvox PBX/swvxCPULoad)>50'
+              name: 'CPU Load alert'
+              priority: WARNING
+              manual_close: 'YES'
+        -
+          uuid: 22e07eceff2845159da0224dbdb72480
+          name: 'Current Calls Conference'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.5.5
+          key: swvxCurrentCallsConference
+          delay: '60'
+          history: 14d
+          status: DISABLED
+          description: 'Number of current calls conference'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: 1a1beef3fc3c4ba8bb7021d7c7ed5805
+          name: 'Current Calls Parked'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.5.12
+          key: swvxCurrentCallsParked
+          delay: '60'
+          history: 14d
+          status: DISABLED
+          description: 'Number of current calls Parked'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: 5214e29395d145499a86b9826c7e2859
+          name: 'Current Calls Queued'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.5.13
+          key: swvxCurrentCallsQueued
+          delay: '60'
+          history: 14d
+          status: DISABLED
+          description: 'Number of current calls queued'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: 334b927eebcf4c929e8ee26807c1c64e
+          name: 'Current Calls Total'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.5.1
+          key: swvxCurrentCallsTotal
+          delay: '60'
+          history: 14d
+          description: 'Number of current calls'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: d684fabeb37c4a54966f43b5e057dcc8
+          name: 'Days Left Expired'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.7.2
+          key: swvxDaysLeftExpiration
+          delay: '3600'
+          history: 14d
+          description: 'Subscription days remaining'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Switchvox Subscription'
+          triggers:
+            -
+              uuid: 1fdd6329710449cfb0802bd3c7ed641e
+              expression: 'last(/Digium Switchvox PBX/swvxDaysLeftExpiration)<2'
+              name: 'Switchvox Expired'
+              priority: DISASTER
+              description: 'Switchvox is expired.'
+              manual_close: 'YES'
+            -
+              uuid: 40fad876f736478e8ceccac6c4ca05e7
+              expression: 'last(/Digium Switchvox PBX/swvxDaysLeftExpiration)<8 and last(/Digium Switchvox PBX/swvxDaysLeftExpiration)<0'
+              name: 'Switchvox Expiring in 7 days'
+              priority: HIGH
+              description: 'Switchvox is expiring within 7 days.'
+              manual_close: 'YES'
+            -
+              uuid: 6741ab383bc74caa98b5bc4530b81019
+              expression: 'last(/Digium Switchvox PBX/swvxDaysLeftExpiration)<15 and last(/Digium Switchvox PBX/swvxDaysLeftExpiration)>7'
+              name: 'Switchvox Expiring in 14 days'
+              priority: HIGH
+              description: 'Switchvox is expiring in 14 days.'
+              manual_close: 'YES'
+            -
+              uuid: bba0e7da2db34240b4d1e3c6aef23d8c
+              expression: 'last(/Digium Switchvox PBX/swvxDaysLeftExpiration)<=30'
+              name: 'Switchvox Expiring in 30 days'
+              priority: AVERAGE
+              description: 'Switchvox is expiring in 30 days.'
+              manual_close: 'YES'
+            -
+              uuid: 4d902e6f237d4d5d919ce4cea0e9a2fe
+              expression: 'last(/Digium Switchvox PBX/swvxDaysLeftExpiration)=60'
+              name: 'Switchvox Expiring in 60 days'
+              priority: AVERAGE
+              description: 'Switchvox is expiring in 60 days.'
+              manual_close: 'YES'
+            -
+              uuid: e68dca0fb36d4ceba42a6e00d72226db
+              expression: 'last(/Digium Switchvox PBX/swvxDaysLeftExpiration)=90'
+              name: 'Switchvox Expiring in 90 days'
+              priority: WARNING
+              description: 'Switchvox is expiring in 90 days.'
+              manual_close: 'YES'
+        -
+          uuid: 1cfd279f63c44ac4ba1c30ceac4e7dc4
+          name: 'Device 0 Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.8.3
+          key: swvxDevice0Status
+          delay: '60'
+          history: 14d
+          trends: '0'
+          status: DISABLED
+          value_type: CHAR
+          description: 'Device #0 Status'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'RAID Controller'
+          triggers:
+            -
+              uuid: eee6921c61844667abd2d62c535b7394
+              expression: 'find(/Digium Switchvox PBX/swvxDevice0Status,,"like","Online")<>1'
+              name: 'Disk Offline'
+              priority: DISASTER
+              description: 'Disk not online'
+              manual_close: 'YES'
+        -
+          uuid: 33f348dfb816442cb4b3f02cbdaf30c1
+          name: 'Device 1 Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.8.3
+          key: swvxDevice1Status
+          delay: '60'
+          history: 14d
+          trends: '0'
+          status: DISABLED
+          description: 'Device #1 Status'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'RAID Controller'
+        -
+          uuid: 74df562c06be412083e47ad8f98801c1
+          name: 'Device 2 Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.8.5
+          key: swvxDevice2Status
+          delay: '300'
+          history: 14d
+          trends: '0'
+          status: DISABLED
+          value_type: CHAR
+          description: 'Device #2 Status'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'RAID Controller'
+        -
+          uuid: 467fe06fc0824e41a60e477a1ebc39a8
+          name: 'Device 3 Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.8.6
+          key: swvxDevice3Status
+          delay: '300'
+          history: 14d
+          trends: '0'
+          status: DISABLED
+          value_type: CHAR
+          description: 'Device #3 Status'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'RAID Controller'
+        -
+          uuid: 96de40a306824c29b0d63b8ce0668a07
+          name: 'Disk Load'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.3.1
+          key: swvxDiskLoad
+          delay: '600'
+          history: 14d
+          trends: '0'
+          value_type: CHAR
+          description: 'Disk Load'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+        -
+          uuid: 50c5bc21f1844d88ab74ed12feb638e2
+          name: 'Disk Percent Used'
+          type: CALCULATED
+          key: swvxDiskPercentageUsed
+          delay: 60s
+          history: 14d
+          value_type: FLOAT
+          params: 'last(//swvxDiskUsed) / last(//swvxDiskTotal) * 100'
+          description: 'Percentage of Disk Usage'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: Storage
+          triggers:
+            -
+              uuid: 91e586cf1c5148138031369c05b110d9
+              expression: 'last(/Digium Switchvox PBX/swvxDiskPercentageUsed)>={$DISK_CRITICAL}'
+              name: 'Disk Percentage Critical >= {$DISK_CRITICAL}%'
+              priority: AVERAGE
+              description: 'Critical disk usage levels'
+              manual_close: 'YES'
+            -
+              uuid: afc7239dcd844aedbca342fafbcdd7a9
+              expression: 'last(/Digium Switchvox PBX/swvxDiskPercentageUsed)>={$DISK_WARNING}'
+              name: 'Disk Percentage Warning >= {$DISK_WARNING}%'
+              priority: WARNING
+              description: 'Disk usage is exceeding recommended safety level.'
+              manual_close: 'YES'
+        -
+          uuid: 8a7ce48a7b364d9db3972035824a69ac
+          name: 'Disk Total'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.2.2
+          key: swvxDiskTotal
+          delay: '3600'
+          history: 14d
+          description: 'Disk Total'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: Storage
+        -
+          uuid: 30899cb18e49454a9e608e12ea3a4988
+          name: 'Disk Used'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.2.1
+          key: swvxDiskUsed
+          delay: 10m
+          history: 14d
+          description: 'Disk Used Updated every 10m because that is all Switchvox updates its SNMP value.'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: Storage
+        -
+          uuid: b03810ad6d864a67887b93d4c5fbb9c3
+          name: 'Subscription Expiration Date'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.7.1
+          key: swvxExpirationDate
+          delay: '0;50/1-7,02:00-02:01'
+          history: 14d
+          trends: '0'
+          value_type: TEXT
+          description: 'Expiration date of Switchvox subscription.'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Switchvox Subscription'
+        -
+          uuid: 5085feaae4334831ab38c138b0dcdd7b
+          name: 'Last Update Disk'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.2.3
+          key: swvxLastUpdateDisk
+          delay: '60'
+          history: 14d
+          trends: '0'
+          value_type: TEXT
+          description: 'Last update disk'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+        -
+          uuid: 0cb95451b10d483eaabc1d54ae3ee779
+          name: 'Last Update (Memory/Swap)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.1.5
+          key: swvxLastUpdateMemorySwap
+          delay: '60'
+          history: 14d
+          trends: '0'
+          value_type: TEXT
+          description: 'Last update (Memory/Swap)'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+        -
+          uuid: d6003f1c24584035808e6c50bd0bb168
+          name: 'Logical Device Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.8.2
+          key: swvxLogicalDeviceStatus
+          delay: '300'
+          history: 14d
+          trends: '0'
+          status: DISABLED
+          value_type: CHAR
+          description: 'logical device status'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'RAID Controller'
+          triggers:
+            -
+              uuid: 793b264580c64deab6ceb730be9bf1f5
+              expression: 'find(/Digium Switchvox PBX/swvxLogicalDeviceStatus,,"like","Optimal")<>1'
+              name: 'Logical Drive not Optimal'
+              priority: WARNING
+              description: 'Logical Drive found to be in non optimal state.'
+              manual_close: 'YES'
+        -
+          uuid: 52fee7e949094a77a664fe295cd458bb
+          name: 'Max Concurrent Calls'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.1.2
+          key: swvxMaxConcurrentCalls
+          delay: '0;60/1-7,00:00-00:01'
+          history: 14d
+          description: 'Max number of cuncurrent calls'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Switchvox Information'
+        -
+          uuid: f24fcbf499954449aef221b0f13c6f2c
+          name: 'Max Extensions'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.1.6
+          key: swvxMaxExtensions
+          delay: '0;50/1-7,00:00-00:01'
+          history: 14d
+          description: 'Max extensions'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Switchvox Information'
+            -
+              tag: Application
+              value: 'Switchvox Subscription'
+        -
+          uuid: 1b01d2146a2a480e8d4a1f5f655ebe73
+          name: 'Max Feature Packs'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.1.4
+          key: swvxMaxFeaturePack
+          delay: '0;50/1-7,00:00-00:01'
+          history: 14d
+          description: 'Max feature packs'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Switchvox Information'
+            -
+              tag: Application
+              value: 'Switchvox Subscription'
+        -
+          uuid: 3cef6cf62d3f44ed8f9b8c0f0095da33
+          name: 'Memory Total'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.1.2
+          key: swvxMemoryTotal
+          delay: '7200'
+          history: 14d
+          units: B
+          description: 'Memory Total'
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '1024'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+        -
+          uuid: 500edb099f50447cad94da063f5a9260
+          name: 'Memory Used'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.1.1
+          key: swvxMemoryUsed
+          delay: '600'
+          history: 14d
+          units: B
+          description: 'Memory used'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+        -
+          uuid: aa0c10c4e1454da1aea572eb88c838b3
+          name: 'Number of Reachable SIP Phones'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.4.2
+          key: swvxNumberOfReachableSIPPhones
+          delay: '300'
+          history: 14d
+          description: 'Number of Reachable SIP Phones (green and yellow state)'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Phone Status'
+        -
+          uuid: c7471dcabb3242b78eaf0159e56d4c5f
+          name: 'Number of SIP Phones'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.4.1
+          key: swvxNumberOfSIPPhones
+          delay: '0;50/1-7,00:00-00:01'
+          history: 14d
+          description: 'Number of SIP Phones'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Phone Status'
+        -
+          uuid: 703f0957f2b84099bb18da4dc1b77c43
+          name: 'Number of Sip Phones in Green State'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.4.5
+          key: swvxNumberOfSipPhonesGreenState
+          delay: '300'
+          history: 14d
+          description: 'Number of Reachable SIP Phones (green state)'
+          tags:
+            -
+              tag: Application
+              value: 'Phone Status'
+        -
+          uuid: b2db297bac93493093621032d02ec098
+          name: 'Number of Sip Phones in Yellow State'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.4.4
+          key: swvxNumberOfSipPhonesYellowState
+          delay: '300'
+          history: 14d
+          description: 'Number of Reachable SIP Phones (Yellow state)'
+          tags:
+            -
+              tag: Application
+              value: 'Phone Status'
+        -
+          uuid: 5f558e5f14c84c4f8b1dca86d69281b5
+          name: 'Number of VoIP Providers'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.2.1
+          key: swvxNumberOfVoIPProviders
+          delay: '0;50/1-7,00:00-00:01'
+          history: 14d
+          description: 'Number of voip providers'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'VoIP Providers'
+        -
+          uuid: bcc5ae205538494a9336f8e1b8a1784b
+          name: 'Number of calls agent_login'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.5.2
+          key: swvxNumCallsAgentLogin
+          delay: '60'
+          history: 14d
+          trends: 90d
+          status: DISABLED
+          description: 'Number of calls in state ''Agent Login'''
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: 3bca69836b0748bbbe8ebc95ec59c544
+          name: 'Number of calls agent_out'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.5.3
+          key: swvxNumCallsAgentout
+          delay: '60'
+          history: 14d
+          trends: 90d
+          status: DISABLED
+          description: 'Number of calls in state ''Agent Out'''
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: 8cd4f9be09f245db8f59416cc10c9755
+          name: 'Number of calls in conference'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.5.5
+          key: swvxNumCallsInConference
+          delay: '60'
+          history: 14d
+          trends: 90d
+          status: DISABLED
+          description: 'Number of calls in state ''conference'''
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: a5ba12ce190e4c7fa0f2ed05a6d431cf
+          name: 'Number of calls in state monitoring'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.5.11
+          key: swvxNumCallsInStateMonitoring
+          delay: '300'
+          history: 14d
+          trends: 90d
+          status: DISABLED
+          description: 'Number of calls in state ''monitoring'''
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: 39efdaf1f638434e87bcf74db12b9a14
+          name: 'Number of calls in state ringing'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.5.15
+          key: swvxNumCallsInStateRinging
+          delay: '300'
+          history: 14d
+          trends: 90d
+          status: DISABLED
+          description: 'Number of calls in state ''ringing'''
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: 0fad45a1d5cc4976960b2125c380df94
+          name: 'Number of calls in state talking'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.5.16
+          key: swvxNumCallsInStateTalking
+          delay: '300'
+          history: 14d
+          trends: 90d
+          status: DISABLED
+          description: 'Number of calls in state ''talking'''
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: e5af8b35d3ac4b5dbaddd3e932e084c7
+          name: 'Number of calls in state unknown'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.5.17
+          key: swvxNumCallsInStateUnknown
+          delay: '300'
+          history: 14d
+          trends: 90d
+          status: DISABLED
+          description: 'Number of calls in state ''unknown'''
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Current Calls'
+        -
+          uuid: 445dfb982e954047a5d08f434056abd7
+          name: 'SIP Phone Registration Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.4.3
+          key: swvxSIPPhoneRegistrationStatus
+          delay: '300'
+          history: 14d
+          trends: '0'
+          status: DISABLED
+          value_type: LOG
+          description: 'Dynamic listing of all SIP phones'
+          tags:
+            -
+              tag: Application
+              value: 'Phone Status'
+        -
+          uuid: e4c4b3ccc7a54107b6718efb540e25ef
+          name: 'Software Version'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.1.1
+          key: swvxSoftwareVersion
+          delay: '3600'
+          history: 14d
+          description: 'Returns Switchvox version'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Switchvox Information'
+          triggers:
+            -
+              uuid: 72f6844e11294970b0238ed48c7f0168
+              expression: 'last(/Digium Switchvox PBX/swvxSoftwareVersion)<{$CURRENT_VERSION}'
+              name: 'Switchvox Update {$CURRENT_VERSION} Available'
+              priority: INFO
+              manual_close: 'YES'
+        -
+          uuid: cb42e49cd6d34f528e979ad5096cffbd
+          name: 'Swap Percentage Used'
+          type: CALCULATED
+          key: swvxSwapPercentageUsed
+          delay: '900'
+          history: 14d
+          value_type: FLOAT
+          units: '%'
+          params: 'last(//swvxSwapUsed) / last(//swvxSwapTotal) * 100'
+          description: 'Percentage of Swap used.'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+          triggers:
+            -
+              uuid: f3a0a5fb43b94015b908df8fa8296e43
+              expression: 'last(/Digium Switchvox PBX/swvxSwapPercentageUsed)>10 and last(/Digium Switchvox PBX/swvxSwapPercentageUsed)<20'
+              name: 'Swap usage 10%'
+              priority: INFO
+              description: |
+                Switchvox is currently using between 10 - 20% swap space.
+                This can be a sign of pending performance issue. Should swap space continue to increase you may be required to restart your Switchvox in order to prevent system lockup.
+              manual_close: 'YES'
+            -
+              uuid: 841e4f9cf98144749c8359387ddc0312
+              expression: 'last(/Digium Switchvox PBX/swvxSwapPercentageUsed)>20 and last(/Digium Switchvox PBX/swvxSwapPercentageUsed)<25'
+              name: 'Swap usage 20%'
+              priority: AVERAGE
+              description: |
+                Switchvox is experience high disk swap usage. Your ability to process calls is likely already degraded and may completely halt altogether unless the disk swap usage is minimized.
+                
+                A reboot of your PBX maybe required shortly
+              manual_close: 'YES'
+            -
+              uuid: 1f7e215d3ae44f90a52fa0f76b79a965
+              expression: 'last(/Digium Switchvox PBX/swvxSwapPercentageUsed)>25 and last(/Digium Switchvox PBX/swvxSwapPercentageUsed)<30'
+              name: 'Swap usage 25%'
+              priority: HIGH
+              description: 'Switchvox is consuming more then 25% disk swap usage. A reboot of your PBX is recommend.'
+              manual_close: 'YES'
+            -
+              uuid: ad5e762ba2054dbf8e3522b47c9c6c35
+              expression: 'last(/Digium Switchvox PBX/swvxSwapPercentageUsed)>30'
+              name: 'Swap usage 30%'
+              priority: DISASTER
+              description: |
+                Switchvox is consuming more than 30% disk swap usage.
+                Restart of the switchvox is required.
+              manual_close: 'YES'
+        -
+          uuid: 117e4e8d11f346ba903ec4b97c2ecc75
+          name: 'Swap Total'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.1.4
+          key: swvxSwapTotal
+          delay: '7200'
+          history: 14d
+          units: B
+          description: 'Swap Total'
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '1024'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+        -
+          uuid: 4dd1450322824735ba8a4bc02fe5a06a
+          name: 'Swap Used'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.3.1.3
+          key: swvxSwapUsed
+          delay: '900'
+          history: 14d
+          units: B
+          description: 'Swap used.'
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '1024'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Hardware Status'
+        -
+          uuid: 4d834810cdeb4cafb1619f829ffb6e8b
+          name: 'Used Extensions'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.1.5
+          key: swvxUsedExtensions
+          delay: '300'
+          history: 14d
+          description: 'Used extensinons'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Switchvox Information'
+            -
+              tag: Application
+              value: 'Switchvox Subscription'
+        -
+          uuid: c0168b04056a4178b43e891d39ce938e
+          name: 'Used Feature Packs'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.22736.10.1.3
+          key: swvxUsedFeaturePacks
+          delay: '0;50/1-7,00:00-00:01'
+          history: 14d
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'Switchvox Information'
+            -
+              tag: Application
+              value: 'Switchvox Subscription'
+        -
+          uuid: 4f38e45c5c144815a9ccf71a27b86d1c
+          name: 'VoIP Providers Ok'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.22736.10.2.2
+          key: swvxVoIPProvidersOK
+          delay: '300'
+          history: 14d
+          description: 'Number of voip providers OK'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: 'VoIP Providers'
+          triggers:
+            -
+              uuid: c48bcc1294cc481b925e790f6e1e41e5
+              expression: 'last(/Digium Switchvox PBX/swvxVoIPProvidersOK)<{$MIN_VOIP_PROVIDERS}'
+              name: 'Minimal VoIP Providers'
+              priority: WARNING
+              description: 'Minimal VoIP providers available on the system.'
+              manual_close: 'YES'
+            -
+              uuid: 59fd9989b9024860a466fa09b1d11420
+              expression: 'last(/Digium Switchvox PBX/swvxVoIPProvidersOK)<1'
+              name: 'No reachable VoIP Providers'
+              priority: HIGH
+              description: 'You currently have no reachable VoIP Providers. Check your network connections, firewall/nat rules, network ACL connections.'
+              manual_close: 'YES'
+        -
+          uuid: 4eedfe3823094cf084fff757d3518363
+          name: 'Device description'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.1.0
+          key: system.descr
+          delay: '3600'
+          history: 14d
+          trends: '0'
+          value_type: CHAR
+          description: |
+            MIB: SNMPv2-MIB
+            A textual description of the entity.  This value should
+            include the full name and version identification of the system's hardware type, software operating-system, and
+            networking software.
+          inventory_link: HARDWARE
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: General
+        -
+          uuid: 92e4672f72204a4db5ff8336740eeefb
+          name: 'System object ID'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.2.0
+          key: system.objectid
+          delay: '3600'
+          history: 14d
+          trends: '0'
+          value_type: CHAR
+          description: |
+            MIB: SNMPv2-MIB
+             The vendor's authoritative identification of the network management subsystem contained in the entity.  This value is allocated within the SMI enterprises subtree (1.3.6.1.4.1) and provides an easy and unambiguous means for determining`what kind of box' is being managed.  For example, if vendor`Flintstones, Inc.' was assigned the subtree1.3.6.1.4.1.4242, it could assign the identifier 1.3.6.1.4.1.4242.1.1 to its `Fred Router'.
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: General
+        -
+          uuid: e0f2036f2a964952a1d2244e80f34e48
+          name: 'Network Device uptime'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: system.uptime
+          delay: '30'
+          history: 14d
+          trends: '0'
+          units: uptime
+          description: |
+            MIB: SNMPv2-MIB
+            The time (in hundredths of a second) since the network management portion of the system was last re-initialized.
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.01'
+          request_method: POST
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: cbe2760698d84f068a0cfefca7955e34
+              expression: 'last(/Digium Switchvox PBX/system.uptime)<10m'
+              name: '{HOST.NAME} has been restarted'
+              priority: WARNING
+              description: |
+                Last value: {ITEM.LASTVALUE1}.
+                The device uptime is less than 10 minutes
+              manual_close: 'YES'
+              dependencies:
+                -
+                  name: 'No SNMP data collection'
+                  expression: 'max(/Digium Switchvox PBX/zabbix[host,snmp,available],{$SNMP_TIMEOUT})=0'
+        -
+          uuid: 82de58da96114998a35286e032bf1241
+          name: Uptime
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: 'system.uptime[sysUpTime.0]'
+          delay: 30s
+          history: 2w
+          trends: 0d
+          units: uptime
+          description: |
+            MIB: SNMPv2-MIB
+            The time (in hundredths of a second) since the network management portion of the system was last re-initialized.
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: 165ef5e0106645caaf4c483e5c83aa44
+              expression: 'last(/Digium Switchvox PBX/system.uptime[sysUpTime.0])<10m'
+              name: '{HOST.NAME} has been restarted (uptime < 10m)'
+              priority: WARNING
+              description: 'Uptime is less than 10 minutes'
+              manual_close: 'YES'
+              dependencies:
+                -
+                  name: 'No SNMP data collection'
+                  expression: 'max(/Digium Switchvox PBX/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
+      macros:
+        -
+          macro: '{$CURRENT_VERSION}'
+          value: '103413'
+          description: 'Switchvox version'
+        -
+          macro: '{$DISK_CRITICAL}'
+          value: '75'
+        -
+          macro: '{$DISK_WARNING}'
+          value: '50'
+        -
+          macro: '{$MIN_VOIP_PROVIDERS}'
+          value: '2'
+        -
+          macro: '{$REGCODE}'
+        -
+          macro: '{$STORAGE_UTIL_CRIT}'
+          value: '75'
+        -
+          macro: '{$STORAGE_UTIL_WARN}'
+          value: '70'
+  triggers:
+    -
+      uuid: f78be4e13f084a1c99030a84eabed76a
+      expression: 'max(/Digium Switchvox PBX/zabbix[host,snmp,available],{$SNMP_TIMEOUT})=0'
+      name: 'No SNMP data collection'
+      priority: WARNING
+      description: |
+        Last value: {ITEM.LASTVALUE1}.
+        SNMP is not available for polling. Please check device connectivity and SNMP settings.
+      manual_close: 'YES'
+      dependencies:
+        -
+          name: 'Unavailable by ICMP ping'
+          expression: 'max(/Digium Switchvox PBX/icmpping,#3)=0'
+    -
+      uuid: 2a542eaac75c4072a2670753600c4a04
+      expression: 'last(/Digium Switchvox PBX/system.name,#1)<>last(/Digium Switchvox PBX/system.name,#2) and length(last(/Digium Switchvox PBX/system.name))>0'
+      name: 'System name has changed (new name: {ITEM.VALUE})'
+      priority: INFO
+      description: 'System name has changed. Ack to close.'
+      manual_close: 'YES'
+  graphs:
+    -
+      uuid: 9fff6223d22f413d8a9c61bd5217e181
+      name: 'Concurrent Calls'
+      graph_items:
+        -
+          color: '008800'
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxCurrentCallsTotal
+    -
+      uuid: 8401535ec0ab47829dce7d4eee0e0f37
+      name: 'Concurrent Calls Summary'
+      show_work_period: 'NO'
+      show_triggers: 'NO'
+      graph_items:
+        -
+          drawtype: GRADIENT_LINE
+          color: 1A7C11
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxCurrentCallsTotal
+        -
+          sortorder: '1'
+          color: F63100
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxCurrentCallsConference
+        -
+          sortorder: '2'
+          color: 2774A4
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxCurrentCallsParked
+        -
+          sortorder: '3'
+          drawtype: FILLED_REGION
+          color: A54F10
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxCurrentCallsQueued
+        -
+          sortorder: '4'
+          color: FC6EA3
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxNumCallsAgentLogin
+        -
+          sortorder: '5'
+          color: 6C59DC
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxNumCallsAgentout
+    -
+      uuid: b01af53bb44e4d7abe4be0bbf5e180b2
+      name: 'Concurrent Queued Calls'
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxCurrentCallsQueued
+    -
+      uuid: 18eb415fbac14bf989606849d9491b8a
+      name: 'CPU Usage'
+      graph_items:
+        -
+          color: FF8000
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxCPULoad
+    -
+      uuid: 44d30e06dc47460e9bb98cd831023493
+      name: 'Disk Usage'
+      yaxismax: '0'
+      show_work_period: 'NO'
+      show_triggers: 'NO'
+      type: EXPLODED
+      show_3d: 'YES'
+      graph_items:
+        -
+          color: 00C800
+          calc_fnc: MAX
+          type: GRAPH_SUM
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxDiskTotal
+        -
+          sortorder: '1'
+          color: C80000
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxDiskUsed
+    -
+      uuid: a0938e8c689844b08699caa9ee7bbb90
+      name: 'Disk Usage over Time'
+      type: STACKED
+      ymax_type_1: ITEM
+      ymax_item_1:
+        host: 'Digium Switchvox PBX'
+        key: swvxDiskTotal
+      graph_items:
+        -
+          color: DD0000
+          yaxisside: RIGHT
+          calc_fnc: MAX
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxDiskUsed
+    -
+      uuid: dc0ffee2929548aca52cc9da2df8c52d
+      name: 'Memory Usage'
+      graph_items:
+        -
+          color: FF0000
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxMemoryUsed
+        -
+          sortorder: '1'
+          drawtype: GRADIENT_LINE
+          color: BFFF00
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxMemoryTotal
+    -
+      uuid: 9ddb90b9e97a4648a015f3a5e31286fd
+      name: 'Swap Usage'
+      type: STACKED
+      graph_items:
+        -
+          color: 0000C8
+          calc_fnc: MAX
+          item:
+            host: 'Digium Switchvox PBX'
+            key: swvxSwapPercentageUsed
